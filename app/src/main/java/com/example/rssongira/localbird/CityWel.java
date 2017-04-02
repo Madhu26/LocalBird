@@ -16,10 +16,10 @@ public class CityWel extends AppCompatActivity
         setContentView(R.layout.city_wel);
 
     }
-    public void GoToList(View v)
+    public void GoToTab(View v)
     {
-        Intent i1=new Intent(CityWel.this,MainList.class);
-        startActivity(i1);
+        Intent i7=new Intent(CityWel.this,Main_Tab.class);
+        startActivity(i7);
 
     }
 }

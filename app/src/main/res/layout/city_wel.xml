@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="MOVE"
-        android:onClick="GoToList"
+        android:onClick="GoToTab"
         android:id="@+id/go"
         android:layout_marginBottom="91dp"
         android:layout_alignParentBottom="true"
