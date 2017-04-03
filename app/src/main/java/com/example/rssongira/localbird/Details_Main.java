@@ -1,5 +1,6 @@
 package com.example.rssongira.localbird;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +11,15 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,12 +29,15 @@ import java.util.HashMap;
 /**
  * Created by RSSongira on 4/3/2017.
  */
-public class Details_Main extends AppCompatActivity
-{
+public class Details_Main extends AppCompatActivity  {
+    String lat;
+    String lng;
+    GoogleMap myGoogleMap;
     private String TAG = MainActivity.class.getSimpleName();
         private String Id;
     private ProgressDialog pDialog;
     private ListView lv;
+    Bundle b9 = new Bundle();
 
     // URL to get contacts JSON
     private static String url;
@@ -34,6 +47,20 @@ public class Details_Main extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.placesdetails_main);
+       /* if(googlePlayServiceAvailable())
+        {
+            Toast.makeText(Details_Main.this, "Perfect", Toast.LENGTH_SHORT).show();
+            setContentView(R.layout.placesdetails_main);
+            intitMap();
+
+        }
+        else
+        {
+            // No google Maps
+
+
+        }
+**/
         Id = getIntent().getExtras().getString("PLACE_ID");
 
         url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="+Id+"&key=AIzaSyB5J0DVdARLzuVMVp7pQlSMYeqtbDAaUuo";
@@ -45,10 +72,39 @@ public class Details_Main extends AppCompatActivity
         new GetContacts().execute();
     }
 
+   /* private void intitMap() {
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.myfragment);
+        mapFragment.getMapAsync(this);
+        // This method automatically initializes map system system and view
+    }**/
+   /* private boolean googlePlayServiceAvailable() {
+        GoogleApiAvailability api= GoogleApiAvailability.getInstance();
+        int isAvailable = api.isGooglePlayServicesAvailable(this);
+        if(isAvailable == ConnectionResult.SUCCESS)
+        {
+            return true;
+        }
+        else if(api.isUserResolvableError(isAvailable))
+        {
+            Dialog dialog = api.getErrorDialog(this,isAvailable,0);
+            // 0 is request Code
+            dialog.show();
+
+        }
+        else
+        {
+            Toast.makeText(this,"Cannot play services",Toast.LENGTH_LONG).show();
+        }
+        return false;
+
+    }
+
+
+**/
     /**
      * Async task class to get json by making HTTP call
      */
-    private class GetContacts extends AsyncTask<Void, Void, Void> {
+    private class GetContacts extends AsyncTask<Void, Void, Void>  {
 
         @Override
         protected void onPreExecute() {
@@ -87,7 +143,11 @@ public class Details_Main extends AppCompatActivity
                     {
                         e.printStackTrace();
                     }
-
+                    JSONObject sys=contacts.getJSONObject("geometry").getJSONObject("location");
+                    lat=sys.getString("lat");
+                    lng=sys.getString("lng");
+                        b9.putString("lat",lat);
+                        b9.putString("lng",lng);
 
                     // looping through All Contacts
                     //for (int i = 0; i < contacts.length(); i++) {
@@ -161,10 +221,39 @@ public class Details_Main extends AppCompatActivity
             ListAdapter adapter = new SimpleAdapter(
                     Details_Main.this, contactList,R.layout.placesdetails_list, new String[]{"name","formatted_address"
             }, new int[]{R.id.name, R.id.place_id});
-
+                Toast.makeText(Details_Main.this,"Lat : "+lat+"Lng :"+lng,Toast.LENGTH_SHORT).show();
             lv.setAdapter(adapter);
         }
 
+
     }
+
+   /* @Override
+    public void onMapReady(GoogleMap googleMap) {
+        myGoogleMap = googleMap;
+        //goToLocationZoom();
+      //  goToLocationZoom(Double.parseDouble(lat),Double.parseDouble(lng),15);
+        goToLocationZoom(21.167865,72.787199,15);
+    }
+    private void goToLocationZoom(double lat, double lg,float zoom)
+    {
+        LatLng ll = new LatLng(lat,lg);
+
+
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll,zoom);
+        myGoogleMap.moveCamera(update);
+        // Camera Update defines Camera move Used using CameraUpdateFactory
+
+    }
+    private void goToLocation(double lat, double lg)
+    {
+        LatLng ll = new LatLng(lat,lg);
+        CameraUpdate update = CameraUpdateFactory.newLatLng(ll);
+        // move to lan and long
+
+        myGoogleMap.moveCamera(update);
+    }
+
+**/
 }
 

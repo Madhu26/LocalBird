@@ -175,7 +175,8 @@ public class Display_First extends AppCompatActivity {
                     Display_First.this, contactList,R.layout.list_item_first, new String[]{"name",
                     "vicinity"}, new int[]{R.id.getName, R.id.getVic});
                     //new ImageLoadTask(icon_url, image).execute();
-            //image.setImageDrawable(res.getDrawable(R.drawable.myimage));
+
+
                         lv.setAdapter(adapter);
 
 
