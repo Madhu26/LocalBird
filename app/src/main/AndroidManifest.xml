@@ -23,6 +23,8 @@
         <activity android:name=".Display_First"></activity>
         <activity android:name=".Main_Tab"></activity>
         <activity android:name=".Weather_MainActivity"></activity>
+        <activity android:name=".Details_Main"></activity>
+
 
     </application>
 

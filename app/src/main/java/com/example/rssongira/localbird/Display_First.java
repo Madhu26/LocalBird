@@ -9,6 +9,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -33,6 +35,7 @@ public class Display_First extends AppCompatActivity {
     String icon_url;
    // String place_lat;
     //String place_long;
+    Bundle b7=new Bundle();
    protected static String getlat;
     protected static String getlg;
     protected double lat;
@@ -40,7 +43,7 @@ public class Display_First extends AppCompatActivity {
 
     protected  double lg;
     private String TAG = MainActivity.class.getSimpleName();
-
+    private String id;
     private ProgressDialog pDialog;
     private ListView lv;
     private static  String url;
@@ -65,6 +68,7 @@ public class Display_First extends AppCompatActivity {
         // list_item_first is the each item structure
         contactList = new ArrayList<>();
         new GetContacts().execute();
+
 
     }
 
@@ -110,7 +114,8 @@ public class Display_First extends AppCompatActivity {
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
 
-                        String id = c.getString("place_id");
+                        id = c.getString("place_id");
+                       b7.putString(String.valueOf(i),id);
                         String name = c.getString("name");
                         //String rating = c.getString("rating");
                          icon_url = c.getString("icon");
@@ -172,6 +177,21 @@ public class Display_First extends AppCompatActivity {
                     //new ImageLoadTask(icon_url, image).execute();
             //image.setImageDrawable(res.getDrawable(R.drawable.myimage));
                         lv.setAdapter(adapter);
+
+
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+
+               String PLACE_ID = b7.getString(String.valueOf(arg2));
+                    //Toast.makeText(Display_First.this,"Lets Check ",Toast.LENGTH_SHORT).show();
+                   Intent i=new Intent(Display_First.this, Details_Main.class);
+                    i.putExtra("PLACE_ID", PLACE_ID);
+                    //i.putExtras(b7);
+                   startActivity(i);
+                }
+            });
+
         }
 
     }
