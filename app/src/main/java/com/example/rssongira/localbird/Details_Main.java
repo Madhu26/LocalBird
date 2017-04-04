@@ -1,14 +1,20 @@
 package com.example.rssongira.localbird;
 
 import android.app.Dialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
@@ -29,14 +36,17 @@ import java.util.HashMap;
 /**
  * Created by RSSongira on 4/3/2017.
  */
-public class Details_Main extends AppCompatActivity  {
+public class Details_Main extends FragmentActivity implements OnMapReadyCallback {
     String lat;
     String lng;
     GoogleMap myGoogleMap;
-    private String TAG = MainActivity.class.getSimpleName();
+    TextView tname,tplace;
+    private String TAG = Details_Main.class.getSimpleName();
         private String Id;
+    String name;
+    String formatted_address;
     private ProgressDialog pDialog;
-    private ListView lv;
+    //private ListView lv;
     Bundle b9 = new Bundle();
 
     // URL to get contacts JSON
@@ -46,30 +56,110 @@ public class Details_Main extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.placesdetails_main);
-       /* if(googlePlayServiceAvailable())
+
+        if(googlePlayServiceAvailable())
         {
-            Toast.makeText(Details_Main.this, "Perfect", Toast.LENGTH_SHORT).show();
-            setContentView(R.layout.placesdetails_main);
+            //Toast.makeText(this, "Perfect", Toast.LENGTH_SHORT).show();
+            setContentView(R.layout.placesdetails_list);
+
             intitMap();
 
         }
         else
         {
             // No google Maps
-
+            Toast.makeText(Details_Main.this, "Sorry Map Service Unavailable", Toast.LENGTH_SHORT).show();
 
         }
-**/
+
+        //setContentView(R.layout.placesdetails_list);
+        tname=(TextView)findViewById(R.id.name);
+        tplace=(TextView)findViewById(R.id.place_id);
+
         Id = getIntent().getExtras().getString("PLACE_ID");
 
         url = "https://maps.googleapis.com/maps/api/place/details/json?placeid="+Id+"&key=AIzaSyB5J0DVdARLzuVMVp7pQlSMYeqtbDAaUuo";
 
         contactList = new ArrayList<>();
 
-        lv = (ListView) findViewById(R.id.list);
+     //   lv = (ListView) findViewById(R.id.list);
 
         new GetContacts().execute();
+    }
+
+    private void intitMap() {
+        MapFragment fragment = (MapFragment) getFragmentManager().findFragmentById(R.id.fragment);
+        fragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+
+                myGoogleMap = googleMap; // here you set your Google map
+                String tlag = b9.getString("lat");
+                String tlng = b9.getString("lng");
+
+                goToLocationZoom(Double.parseDouble(tlag),Double.parseDouble(tlng),15);
+
+                // here you do the rest of your calculations with your map
+            }
+        });
+
+        // This method automatically initializes map system system and view
+
+    }
+
+    public void GPSIntent(View v)
+    {
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("google.navigation:q=40.7143528,-74.0059731"));
+        startActivity(intent);
+
+    }
+
+    private boolean googlePlayServiceAvailable() {
+        GoogleApiAvailability api= GoogleApiAvailability.getInstance();
+        int isAvailable = api.isGooglePlayServicesAvailable(this);
+        if(isAvailable == ConnectionResult.SUCCESS)
+        {
+            return true;
+        }
+        else if(api.isUserResolvableError(isAvailable))
+        {
+            Dialog dialog = api.getErrorDialog(this,isAvailable,0);
+            // 0 is request Code
+            dialog.show();
+
+        }
+        else
+        {
+            Toast.makeText(this,"Cannot play services",Toast.LENGTH_LONG).show();
+        }
+        return false;
+    }
+
+
+
+
+
+    private void goToLocationZoom(double lat, double lg,float zoom)
+    {
+        LatLng ll = new LatLng(lat,lg);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll,zoom);
+        myGoogleMap.moveCamera(update);
+        // Camera Update defines Camera move Used using CameraUpdateFactory
+
+    }
+    private void goToLocation(double lat, double lg)
+    {
+        LatLng ll = new LatLng(lat,lg);
+        CameraUpdate update = CameraUpdateFactory.newLatLng(ll);
+        // move to lan and long
+
+        myGoogleMap.moveCamera(update);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        myGoogleMap = googleMap;
     }
 
    /* private void intitMap() {
@@ -153,8 +243,8 @@ public class Details_Main extends AppCompatActivity  {
                     //for (int i = 0; i < contacts.length(); i++) {
                     //JSONObject c = contacts.getJSONObject();
 
-                    String name = contacts.getString("name");
-                    String formatted_address = contacts.getString("formatted_address");
+                     name = contacts.getString("name");
+                     formatted_address = contacts.getString("formatted_address");
                     //String email = c.getString("email");
                     // String address = c.getString("address");
                     //String gender = c.getString("gender");
@@ -218,11 +308,13 @@ public class Details_Main extends AppCompatActivity  {
             /**
              * Updating parsed JSON data into ListView
              * */
-            ListAdapter adapter = new SimpleAdapter(
+            /*ListAdapter adapter = new SimpleAdapter(
                     Details_Main.this, contactList,R.layout.placesdetails_list, new String[]{"name","formatted_address"
             }, new int[]{R.id.name, R.id.place_id});
                 Toast.makeText(Details_Main.this,"Lat : "+lat+"Lng :"+lng,Toast.LENGTH_SHORT).show();
-            lv.setAdapter(adapter);
+            lv.setAdapter(adapter);**/
+            tplace.setText(formatted_address);
+            tname.setText(name);
         }
 
 

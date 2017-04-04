@@ -3,9 +3,9 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragment"
-        android:name="com.google.android.gms.maps.MapFragment"></fragment>
+        android:layout_height="wrap_content"
+        android:id="@+id/listView" />
+
 </LinearLayout>

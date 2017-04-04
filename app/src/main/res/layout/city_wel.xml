@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="fill_parent"
+    android:background="@drawable/welcome"
+    android:scaleType = "centerCrop"
+    >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="CITY WELCOME"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="60dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="MOVE"
+        android:text="Explore"
+        android:textSize="25sp"
+        android:textAlignment="gravity"
+        android:textColor="#000000"
+        android:textStyle="italic"
+        android:background="#FFFDE7"
         android:onClick="GoToTab"
         android:id="@+id/go"
-        android:layout_marginBottom="91dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignStart="@+id/textView2" />
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

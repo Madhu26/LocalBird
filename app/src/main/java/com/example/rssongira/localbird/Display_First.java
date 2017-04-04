@@ -26,15 +26,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by RSSongira on 4/1/2017.
  */
 public class Display_First extends AppCompatActivity {
-    ImageView image;
+//    ImageView image;
     String icon_url;
+    String plag;
+    String plng;
    // String place_lat;
     //String place_long;
+    String type;
     Bundle b7=new Bundle();
    protected static String getlat;
     protected static String getlg;
@@ -42,7 +47,7 @@ public class Display_First extends AppCompatActivity {
     //Resources res = getResources(); /** from an Activity */
 
     protected  double lg;
-    private String TAG = MainActivity.class.getSimpleName();
+    private String TAG = Display_First.class.getSimpleName();
     private String id;
     private ProgressDialog pDialog;
     private ListView lv;
@@ -59,12 +64,14 @@ public class Display_First extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_prepare);
         lv=(ListView)findViewById(R.id.list);
-        image=(ImageView)findViewById(R.id.getImage);
+  //      image=(ImageView)findViewById(R.id.getImage);
         Intent i5 = getIntent();
         Bundle b1= i5.getExtras();
        getlat = b1.getString("Latitude");
         getlg = b1.getString("Longitude");
-         url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+getlat+","+getlg+"&radius=900&type=restaurant&key=AIzaSyB5J0DVdARLzuVMVp7pQlSMYeqtbDAaUuo";
+        type= b1.getString("type");
+        Toast.makeText(Display_First.this,"Inside the display "+type,Toast.LENGTH_SHORT).show();
+         url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+getlat+","+getlg+"&radius=900&type="+type+"&key=AIzaSyB5J0DVdARLzuVMVp7pQlSMYeqtbDAaUuo";
         // list_item_first is the each item structure
         contactList = new ArrayList<>();
         new GetContacts().execute();
@@ -113,7 +120,8 @@ public class Display_First extends AppCompatActivity {
                     // looping through All Contacts
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
-
+                        plag = c.getJSONObject("geometry").getJSONObject("location").getString("lat");
+                        plng = c.getJSONObject("geometry").getJSONObject("location").getString("lat");
                         id = c.getString("place_id");
                        b7.putString(String.valueOf(i),id);
                         String name = c.getString("name");
@@ -173,8 +181,8 @@ public class Display_First extends AppCompatActivity {
 
             ListAdapter adapter = new SimpleAdapter(
                     Display_First.this, contactList,R.layout.list_item_first, new String[]{"name",
-                    "vicinity"}, new int[]{R.id.getName, R.id.getVic});
-                    //new ImageLoadTask(icon_url, image).execute();
+                    "vicinity","icon_url"}, new int[]{R.id.getName, R.id.getVic,R.id.getImage});
+                   // new ImageLoadTask("https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png", image).execute();
 
 
                         lv.setAdapter(adapter);
@@ -197,40 +205,25 @@ public class Display_First extends AppCompatActivity {
 
     }
 
-    public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
-        // LoadImage to be displace in List View from the url got from Json Data
-        private String url;
-        private ImageView imageView;
-
-        public ImageLoadTask(String url, ImageView imageView) {
-            this.url = url;
-            this.imageView = imageView;
-        }
+    /*public class MainActivity extends AppCompatActivity {
+        ListView lv;
 
         @Override
-        protected Bitmap doInBackground(Void... params) {
-            try {
-                URL urlConnection = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) urlConnection
-                        .openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            lv = (ListView) findViewById(R.id.listView);
+            List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("uri",
+                    "http://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Wiktionary_small.svg/350px-Wiktionary_small.svg.png");
+            //here u can add as many uri as u want
+            data.add(map);
+            MySimpleAdapter adapter = new MySimpleAdapter(MainActivity.this, data,
+                    R.layout.row, new String[] {}, new int[] {});
+            lv.setAdapter(adapter);
         }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            super.onPostExecute(result);
-            imageView.setImageBitmap(result);
-        }
-
-    }
+    }**/
 }
 
 
